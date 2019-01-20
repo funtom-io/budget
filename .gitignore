@@ -13,7 +13,7 @@ Dockerfile
 docker-compose.yml
 
 # Credentials
-**/credentials.json
+# **/credentials.json
 **/token.json
 
 # Logs
