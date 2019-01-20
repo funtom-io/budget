@@ -17,7 +17,7 @@ docker-compose.yml
 **/token.json
 
 # Logs
-logs/*
+log/*
 
 # IDEA
 .idea/

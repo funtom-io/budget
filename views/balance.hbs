@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="heb">
+<head>
+    <meta charset="UTF-8">
+    <title>Balance</title>
+</head>
+<body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script>
+
+    function refreshEnvelopeBalance(sheetId) {
+        $.ajax({
+            url: `/sheetBalance?sheetId=${sheetId}`,
+            type: 'GET',
+            success: function (response) {
+                document.getElementById("balance-" + sheetId).innerText = response.result;
+            },
+            error: function (error) {
+                document.getElementById("balance-" + sheetId).innerText = '???';
+            }
+        });
+    }
+
+    function onSubtract(sheetId) {
+        let amount = -Math.abs(document.getElementById("amount-" + sheetId).value);
+        onAmountSave(sheetId, amount);
+    }
+
+    function onAdd(sheetId) {
+        let amount = Math.abs(document.getElementById("amount-" + sheetId).value);
+        onAmountSave(sheetId, amount);
+    }
+
+    function onAmountSave(sheetId, amount) {
+        let payload = {
+            sheetId: sheetId,
+            amount: amount,
+            comment: document.getElementById("comment-" + sheetId).value
+        };
+
+        document.getElementById("amount-" + sheetId).value = null;
+        document.getElementById("comment-" + sheetId).value = null;
+        document.getElementById("save-status-" + sheetId).innerText = '';
+
+        $.ajax({
+            url: "/addAmount",
+            type: 'POST',
+            data: JSON.stringify(payload),
+            contentType: 'application/json; charset=utf-8',
+            success: function (response) {
+                document.getElementById("save-status-" + sheetId).innerText = 'SUCCESS';
+                refreshEnvelopeBalance(sheetId);
+                setTimeout(() => document.getElementById("save-status-" + sheetId).innerText = '', 10000);
+            },
+            error: function (error) {
+                document.getElementById("save-status-" + sheetId).innerText = 'FAILURE';
+                refreshEnvelopeBalance(sheetId);
+                setTimeout(() => document.getElementById("save-status-" + sheetId).innerText = '', 10000);
+            }
+        });
+    }
+</script>
+
+<table border="2" align="center">
+    <tr>
+        <th>Balance</th>
+        <th>Envelope</th>
+        <th>Amount to add</th>
+        <th>Comment</th>
+        <th></th>
+        <th></th>
+        <th>Last save status</th>
+    </tr>
+    {{#each data}}
+        <tr id="table-{{this.id}}">
+            <td align="left" id="balance-{{this.id}}">{{this.balance}}</td>
+            <td align="right"><a target="_blank" rel="noopener noreferrer" href="{{this.link}}">{{this.name}}</a></td>
+            <td align="left"><input type="number" id="amount-{{this.id}}"/></td>
+            <td align="left"><input type="text" id="comment-{{this.id}}"/></td>
+            <td align="left">
+                <button id="save-btn-{{this.id}}" onclick="onSubtract('{{this.id}}')"><b>-</b></button>
+            </td>
+            <td align="left">
+                <button id="save-btn-{{this.id}}" onclick="onAdd('{{this.id}}')"><b>+</b></button>
+            </td>
+            <td align="left" id="save-status-{{this.id}}"></td>
+        </tr>
+    {{/each}}
+</table>
+
+<table border="2" align="center">
+    <tr>
+        <td align="left">Plus</td>
+        <td align="right">{{plus}}</td>
+    </tr>
+    <tr>
+        <td align="left">Minus</td>
+        <td align="right">{{minus}}</td>
+    </tr>
+    <tr>
+        <td align="left">Total</td>
+        <td align="right">{{total}}</td>
+    </tr>
+</table>
+
+</body>
+</html>
