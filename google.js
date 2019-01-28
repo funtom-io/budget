@@ -2,7 +2,6 @@ const {google} = require('googleapis');
 require('dotenv').config();
 
 function findAllEnvelopes(token) {
-
     const auth = new google.auth.OAuth2(process.env.CLIENT_SECRET, process.env.CLIENT_ID, process.env.CALLBACK_URL);
     auth.setCredentials({access_token: token});
 
@@ -21,14 +20,13 @@ function findAllEnvelopes(token) {
                 let result = res.data.files.map(f => {
                     return {'id': f.id, 'name': f.name, 'version': f.version}
                 });
+
                 resolve(result);
             }
         });
     });
 }
-
 function enrichEnvelopes(token, envelopes) {
-
     const auth = new google.auth.OAuth2(process.env.CLIENT_SECRET, process.env.CLIENT_ID, process.env.CALLBACK_URL);
     auth.setCredentials({access_token: token});
 
