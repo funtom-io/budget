@@ -27,10 +27,14 @@ server.use(passport.initialize());
 server.use(express.static(path.join(__dirname, 'public')));
 server.use(bodyParser.json());
 server.set('view engine', 'hbs');
-hbs.registerPartials(__dirname + '/views/partials');
+hbs.registerPartials(path.join(__dirname, '/views/partials'));
 
 server.get('/login', passport.authenticate('google', {
-    scope: ["https://www.googleapis.com/auth/drive.readonly", "https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/plus.login"]
+    scope: [
+        "https://www.googleapis.com/auth/drive.readonly",
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/plus.login"
+    ]
 }));
 
 server.get('/logout', (req, res) => {
@@ -83,5 +87,5 @@ server.get('/sheetBalance', (req, res) => {
 });
 
 server.listen(PORT, () => {
-    console.log(`Server started at port ${PORT}. Go to http://localhost:${PORT}/`);
+    console.log(`Server started at port ${PORT}. Go to http://localhost:${PORT}/login`);
 });
