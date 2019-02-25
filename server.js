@@ -66,7 +66,7 @@ function validateToken(req, res) {
     } else {
         res.cookie('token', '');
         res.status(401);
-        res.send('<html lang="en"><body><h1>Please login first</h1></body></html>');
+        res.send('<html lang="en"><body><h1><a href=/login>Please login first</a></h1></body></html>');
         return false;
     }
 }
