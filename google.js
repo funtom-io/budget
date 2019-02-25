@@ -62,20 +62,13 @@ function enrichEnvelopes(token, envelopes) {
                 } else {
                     sheets.spreadsheets.values.get({
                         'spreadsheetId': envelope.id,
-<<<<<<< HEAD
                         'range': "B1:C1"
-=======
-                        'range': "B1"
->>>>>>> 9b11da0191c2e79d982d13cdff251e4f622a01d2
                     }, (err, res) => {
                         if (err) {
                             reject(err);
                         } else {
                             envelope.balance = parseInt(res.data.values[0][0]);
-<<<<<<< HEAD
                             envelope.budget = parseInt(res.data.values[0][1]);
-=======
->>>>>>> 9b11da0191c2e79d982d13cdff251e4f622a01d2
                             envelope.link = 'https://docs.google.com/spreadsheets/d/' + envelopes[e].id;
                             envelopesCache.set(envelope.id, envelope);
                             onEnvelopeCompletion();
