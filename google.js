@@ -1,6 +1,8 @@
 const {google} = require('googleapis');
 require('dotenv').config();
 
+const envelopesCache = new Map();
+
 function findAllEnvelopes(token) {
     const auth = new google.auth.OAuth2(process.env.CLIENT_SECRET, process.env.CLIENT_ID, process.env.CALLBACK_URL);
     auth.setCredentials({access_token: token});
@@ -26,16 +28,24 @@ function findAllEnvelopes(token) {
         });
     });
 }
+
 function enrichEnvelopes(token, envelopes) {
     const auth = new google.auth.OAuth2(process.env.CLIENT_SECRET, process.env.CLIENT_ID, process.env.CALLBACK_URL);
     auth.setCredentials({access_token: token});
 
     return new Promise((resolve, reject) => {
 
-        let requests = 0;
+        let keys = 0;
         for (let e in  Object.keys(envelopes)) {
             if (envelopes.hasOwnProperty(e)) {
-                requests++;
+                keys++;
+            }
+        }
+
+        function onEnvelopeCompletion() {
+            keys--;
+            if (keys === 0) {
+                resolve(envelopes);
             }
         }
 
@@ -43,21 +53,27 @@ function enrichEnvelopes(token, envelopes) {
 
         for (let e in  Object.keys(envelopes)) {
             if (envelopes.hasOwnProperty(e)) {
-                sheets.spreadsheets.values.get({
-                    'spreadsheetId': envelopes[e].id,
-                    'range': "B1"
-                }, (err, res) => {
-                    if (err) {
-                        reject(err);
-                    } else {
-                        envelopes[e].balance = parseInt(res.data.values[0][0]);
-                        envelopes[e].link = 'https://docs.google.com/spreadsheets/d/' + envelopes[e].id;
-                        requests--;
-                        if (requests === 0) {
-                            resolve(envelopes);
+
+                let envelope = envelopes[e];
+                const cachedEnvelope = envelopesCache.get(envelope.id);
+                if (cachedEnvelope && cachedEnvelope.version === envelope.version) {
+                    envelopes[e] = cachedEnvelope;
+                    onEnvelopeCompletion()
+                } else {
+                    sheets.spreadsheets.values.get({
+                        'spreadsheetId': envelope.id,
+                        'range': "B1"
+                    }, (err, res) => {
+                        if (err) {
+                            reject(err);
+                        } else {
+                            envelope.balance = parseInt(res.data.values[0][0]);
+                            envelope.link = 'https://docs.google.com/spreadsheets/d/' + envelopes[e].id;
+                            envelopesCache.set(envelope.id, envelope);
+                            onEnvelopeCompletion();
                         }
-                    }
-                });
+                    });
+                }
             }
         }
     });
