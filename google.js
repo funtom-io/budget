@@ -62,12 +62,13 @@ function enrichEnvelopes(token, envelopes) {
                 } else {
                     sheets.spreadsheets.values.get({
                         'spreadsheetId': envelope.id,
-                        'range': "B1"
+                        'range': "B1:C1"
                     }, (err, res) => {
                         if (err) {
                             reject(err);
                         } else {
                             envelope.balance = parseInt(res.data.values[0][0]);
+                            envelope.budget = parseInt(res.data.values[0][1]);
                             envelope.link = 'https://docs.google.com/spreadsheets/d/' + envelopes[e].id;
                             envelopesCache.set(envelope.id, envelope);
                             onEnvelopeCompletion();

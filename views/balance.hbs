@@ -28,8 +28,14 @@
         onAmountSave(sheetId, amount);
     }
 
-    function onAdd(sheetId) {
-        let amount = Math.abs(document.getElementById("amount-" + sheetId).value);
+    function onAdd(sheetId, amount) {
+
+        if (amount) {
+            document.getElementById("amount-" + sheetId).value = amount;
+            document.getElementById("comment-" + sheetId).value = 'תקציב';
+        }
+
+        amount = Math.abs(document.getElementById("amount-" + sheetId).value);
         onAmountSave(sheetId, amount);
     }
 
@@ -65,25 +71,29 @@
 
 <table border="2" align="center">
     <tr>
+        <th>Add</th>
+        <th>Budget</th>
         <th>Balance</th>
         <th>Envelope</th>
-        <th>Amount to add</th>
+        <th>Amount</th>
         <th>Comment</th>
-        <th></th>
-        <th></th>
-        <th>Last save status</th>
+        <th>Subtract</th>
+        <th>Status</th>
     </tr>
     {{#each data}}
         <tr id="table-{{this.id}}">
+            <td align="left">
+                <button style="color: darkred; width: 100%" id="save-btn-{{this.id}}" onclick="onAdd('{{this.id}}')"><b>[  +  ]</b></button>
+            </td>
+            <td align="left">
+                <button style="color: darkred; width: 100%" id="save-budget-btn-{{this.id}}" onclick="onAdd('{{this.id}}', '{{this.budget}}')"><b>+{{this.budget}}</b></button>
+            </td>
             <td align="left" id="balance-{{this.id}}">{{this.balance}}</td>
             <td align="right"><a target="_blank" rel="noopener noreferrer" href="{{this.link}}">{{this.name}}</a></td>
             <td align="left"><input type="number" id="amount-{{this.id}}"/></td>
             <td align="left"><input type="text" id="comment-{{this.id}}"/></td>
             <td align="left">
-                <button id="save-btn-{{this.id}}" onclick="onSubtract('{{this.id}}')"><b>-</b></button>
-            </td>
-            <td align="left">
-                <button id="save-btn-{{this.id}}" onclick="onAdd('{{this.id}}')"><b>+</b></button>
+                <button style="color: darkred; width: 100%" id="save-btn-{{this.id}}" onclick="onSubtract('{{this.id}}')"><b>[  -  ]</b></button>
             </td>
             <td align="left" id="save-status-{{this.id}}"></td>
         </tr>
@@ -92,20 +102,18 @@
 
 <table border="2" align="center">
     <tr>
-        <td align="left">Plus</td>
-        <td align="right">{{plus}}</td>
+        <th>Plus</th>
+        <th>Minus</th>
+        <th>Total</th>
+        <th>Envelopes Folder</th>
+        <th>Budget Sheet</th>
     </tr>
     <tr>
-        <td align="left">Minus</td>
-        <td align="right">{{minus}}</td>
-    </tr>
-    <tr>
-        <td align="left">Total</td>
-        <td align="right">{{total}}</td>
-    </tr>
-    <tr>
-        <td align="left"><a href="https://drive.google.com/drive/folders/0B46Z1DtmRS7qLU9LajZ5NnBLUXM" target="_blank">Envelopes</a></td>
-        <td align="right"><a href="https://drive.google.com/drive/folders/1lcLDneq7dLdkPciqh2EPN4DcBbdcqRZI" target="_blank">Balance</a></td>
+        <td align="center">{{plus}}</td>
+        <td align="center">{{minus}}</td>
+        <td align="center">{{total}}</td>
+        <td align="center"><a href="https://drive.google.com/drive/folders/0B46Z1DtmRS7qLU9LajZ5NnBLUXM" target="_blank">Link</a></td>
+        <td align="center"><a href="https://docs.google.com/spreadsheets/d/1zUTBYIMlY1SQb3NN340iX44qri8BupdY3QMC7bxwA2k" target="_blank">Link</a></td>
     </tr>
 </table>
 
