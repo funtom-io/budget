@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="heb">
+<head>
+    <meta charset="UTF-8">
+    <title>Balance</title>
+</head>
+<body>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
+<script>
+
+
+    function onAdd(code) {
+        document.getElementById("main").innerHTML = '<h1>PleaseWait</h1>';
+        getFamily(code);
+    }
+
+    function getFamily(code) {
+
+        let payload = {
+            code: code,
+        };
+
+        $.ajax({
+            url: "/purim-receive",
+            type: 'POST',
+            data: JSON.stringify(payload),
+            contentType: 'application/json; charset=utf-8',
+            success: function (response) {
+                alert("אתם הענקים של משפחת...")
+                alert(response.result);
+                document.getElementById("main").innerHTML = response.result;
+            },
+            error: function (error) {
+                document.getElementById("main").innerHTML = '<h1>ERROR</h1>';
+            }
+        });
+    }
+</script>
+
+<div id="main">
+<table border="2" align="center">
+    <tr>
+        <th>בחר את שם המשפחה שלך</th>
+    </tr>
+    {{#each data}}
+    <tr id="table-{{this.code}}">
+        <td align="center">
+            <button style="color: darkred; width: 100%" id="save-btn-{{this.code}}" onclick="onAdd('{{this.code}}')"><b>{{this.name}}</b></button>
+        </td>
+    </tr>
+    {{/each}}
+
+</table>
+</div>
+
+</body>
+</html>
