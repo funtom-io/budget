@@ -89,3 +89,58 @@ server.get('/sheetBalance', (req, res) => {
 server.listen(PORT, () => {
     console.log(`Server started at port ${PORT}. Go to http://localhost:${PORT}/login`);
 });
+
+/////////////////////////////////////////////////////////////
+let familiesGive = [
+    {name: 'מנצורה', code: 1},
+    {name: 'קוממי', code: 2},
+    {name: 'מולאים', code: 3},
+    {name: 'ראפ', code: 4},
+    {name: 'אייזנטל', code: 5},
+    {name: 'מייזליש', code: 6},
+    {name: 'דרומי', code: 7},
+    {name: 'הלל', code: 8},
+    {name: 'הניג', code: 9},
+    {name: 'מנשה', code: 10}
+];
+
+let familiesReceive = [
+    {name: 'מנצורה', code: 1},
+    {name: 'קוממי', code: 2},
+    {name: 'מולאים', code: 3},
+    {name: 'ראפ', code: 4},
+    {name: 'אייזנטל', code: 5},
+    {name: 'מייזליש', code: 6},
+    {name: 'דרומי', code: 7},
+    {name: 'הלל', code: 8},
+    {name: 'הניג', code: 9},
+    {name: 'מנשה', code: 10}
+];
+
+server.get('/purim', (req, res) => {
+    res.render('purim', {
+        data: familiesGive
+    });
+});
+
+server.post('/purim-receive', (req, res) => {
+    const code = req.body.code;
+    familiesGive = familiesGive.filter(f => f.code != code);
+
+    let receive;
+    while(true) {
+        receive = familiesReceive[Math.floor(Math.random() * familiesReceive.length)];
+        if (receive.code != code) {
+            break;
+        }
+    }
+
+    familiesReceive = familiesReceive.filter(f => f !== receive);
+
+    console.log(code, receive.code);
+
+    res.status(200).json({
+        result: receive.name
+    });
+
+});
